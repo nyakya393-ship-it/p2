@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Weapon Analyzer | Splatoon 3</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="top-header">
+
+    <div class="brand">
+
+        <div class="brand-mark">W</div>
+
+        <div>
+            <div class="brand-title">
+                WEAPON ANALYZER
+            </div>
+
+            <div class="brand-subtitle">
+                Splatoon 3 Weapon Performance
+            </div>
+        </div>
+
+    </div>
+
+    <div class="header-right">
+
+        <div id="wikiStatus" class="wiki-status">
+            Wiki接続待機中
+        </div>
+
+        <button
+            id="refreshButton"
+            class="refresh-button"
+            type="button"
+        >
+            Wikiを更新
+        </button>
+
+    </div>
+
+</header>
+
+
+<div class="app-layout">
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <section class="side-panel">
+
+            <div class="side-title">
+                カテゴリ
+            </div>
+
+            <div id="categoryList" class="category-list">
+                <button
+                    class="category-button active"
+                    data-category="all"
+                    type="button"
+                >
+                    すべて
+                </button>
+            </div>
+
+        </section>
+
+
+        <section class="side-panel weapon-panel">
+
+            <div class="side-title weapon-list-title">
+                武器一覧
+                <span id="weaponCount"></span>
+            </div>
+
+            <div
+                id="weaponList"
+                class="weapon-list"
+            >
+                <div class="side-loading">
+                    武器一覧を読み込んでいます…
+                </div>
+            </div>
+
+        </section>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="main">
+
+        <div
+            id="mainLoading"
+            class="main-loading hidden"
+        >
+            <div class="loading-spinner"></div>
+            <div>
+                Wikiから武器データを取得中…
+            </div>
+        </div>
+
+
+        <div
+            id="mainError"
+            class="error-panel hidden"
+        >
+            <div class="error-title">
+                Wikiデータを取得できませんでした
+            </div>
+
+            <div
+                id="errorMessage"
+                class="error-message"
+            ></div>
+
+            <button
+                id="retryButton"
+                type="button"
+                class="primary-button"
+            >
+                再試行
+            </button>
+        </div>
+
+
+        <div
+            id="weaponContent"
+            class="weapon-content hidden"
+        >
+
+            <!-- =========================
+                 WEAPON HEADER
+            ========================== -->
+
+            <section class="weapon-header panel">
+
+                <div class="weapon-image-box">
+
+                    <img
+                        id="weaponImage"
+                        class="weapon-image"
+                        src=""
+                        alt=""
+                    >
+
+                    <div
+                        id="weaponImagePlaceholder"
+                        class="weapon-image-placeholder"
+                    >
+                        WIKI
+                    </div>
+
+                </div>
+
+
+                <div class="weapon-info">
+
+                    <div
+                        id="weaponJapaneseName"
+                        class="weapon-japanese-name"
+                    >
+                        —
+                    </div>
+
+                    <div
+                        id="weaponEnglishName"
+                        class="weapon-english-name"
+                    >
+                        —
+                    </div>
+
+                    <div
+                        id="weaponCategory"
+                        class="weapon-category"
+                    >
+                        —
+                    </div>
+
+                    <p
+                        id="weaponDescription"
+                        class="weapon-description"
+                    >
+                        Wikiから詳細データを取得します。
+                    </p>
+
+
+                    <div class="equipment-row">
+
+                        <div class="equipment-item">
+
+                            <div class="equipment-label">
+                                サブ
+                            </div>
+
+                            <div
+                                id="weaponSub"
+                                class="equipment-value"
+                            >
+                                —
+                            </div>
+
+                        </div>
+
+
+                        <div class="equipment-item">
+
+                            <div class="equipment-label">
+                                スペシャル
+                            </div>
+
+                            <div
+                                id="weaponSpecial"
+                                class="equipment-value"
+                            >
+                                —
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="basic-data">
+
+                    <div class="basic-title">
+                        基本データ
+                    </div>
+
+
+                    <div class="basic-row">
+
+                        <span>
+                            射程
+                        </span>
+
+                        <strong id="basicRange">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="basic-row">
+
+                        <span>
+                            ダメージ
+                        </span>
+
+                        <strong id="basicDamage">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="basic-row">
+
+                        <span>
+                            基礎ダメージ
+                        </span>
+
+                        <strong id="basicBaseDamage">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="basic-row">
+
+                        <span>
+                            最小ダメージ
+                        </span>
+
+                        <strong id="basicMinDamage">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="basic-row">
+
+                        <span>
+                            有効射程
+                        </span>
+
+                        <strong id="basicEffectiveRange">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="basic-row">
+
+                        <span>
+                            SP必要ポイント
+                        </span>
+
+                        <strong id="basicSP">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 RANGE / BLAST
+            ========================== -->
+
+            <div class="two-column">
+
+                <section class="panel">
+
+                    <div class="panel-heading">
+                        RANGE
+                    </div>
+
+                    <div class="panel-subheading">
+                        射程と爆風範囲
+                    </div>
+
+
+                    <div class="range-value-row">
+
+                        <span>
+                            Wiki射程ステータス
+                        </span>
+
+                        <strong id="rangeValue">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="range-chart">
+
+                        <div class="range-track">
+
+                            <div
+                                id="rangeFill"
+                                class="range-fill"
+                            ></div>
+
+                            <div
+                                id="rangeEnd"
+                                class="range-end"
+                            ></div>
+
+                        </div>
+
+
+                        <div class="range-axis">
+
+                            <span>0</span>
+                            <span>25</span>
+                            <span>50</span>
+                            <span>75</span>
+                            <span>100</span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="range-details">
+
+                        <div class="range-detail">
+                            <span class="dot purple"></span>
+                            射程ステータス
+                        </div>
+
+                        <div class="range-detail">
+                            <span class="dot pink"></span>
+                            爆風
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="effectiveRangeBox"
+                        class="effective-range-box"
+                    >
+                        詳細有効射程：—
+                    </div>
+
+                </section>
+
+
+                <section class="panel">
+
+                    <div class="panel-heading">
+                        BLAST RADIUS
+                    </div>
+
+                    <div class="panel-subheading">
+                        爆発中心からの爆風範囲
+                    </div>
+
+
+                    <div
+                        id="blastVisual"
+                        class="blast-visual"
+                    >
+
+                        <div class="blast-ring ring-outer"></div>
+                        <div class="blast-ring ring-middle"></div>
+                        <div class="blast-ring ring-inner"></div>
+
+                        <div class="blast-center"></div>
+
+                        <div
+                            id="blastNearCircle"
+                            class="blast-radius-circle near"
+                        ></div>
+
+                        <div
+                            id="blastFullCircle"
+                            class="blast-radius-circle full"
+                        ></div>
+
+                    </div>
+
+
+                    <div
+                        id="blastInfo"
+                        class="blast-info"
+                    >
+                        爆風なし
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <!-- =========================
+                 GRAPHS
+            ========================== -->
+
+            <div class="two-column">
+
+                <section class="panel graph-panel">
+
+                    <div class="panel-heading">
+                        DAMAGE
+                    </div>
+
+                    <div class="panel-subheading">
+                        距離ごとのダメージ
+                    </div>
+
+
+                    <div
+                        id="damageChart"
+                        class="chart"
+                    ></div>
+
+
+                    <div
+                        id="damageNote"
+                        class="chart-note"
+                    ></div>
+
+                </section>
+
+
+                <section class="panel graph-panel">
+
+                    <div class="panel-heading">
+                        DAMAGE DECAY
+                    </div>
+
+                    <div class="panel-subheading">
+                        距離によるダメージ変化
+                    </div>
+
+
+                    <div
+                        id="decayChart"
+                        class="chart"
+                    ></div>
+
+
+                    <div
+                        id="decayNote"
+                        class="chart-note"
+                    ></div>
+
+                </section>
+
+            </div>
+
+
+            <!-- =========================
+                 SPECIFICATIONS
+            ========================== -->
+
+            <section class="panel">
+
+                <div class="panel-heading">
+                    SPECIFICATIONS
+                </div>
+
+                <div class="panel-subheading">
+                    Wiki掲載の詳細データ
+                </div>
+
+
+                <div
+                    id="specifications"
+                    class="spec-grid"
+                ></div>
+
+
+                <div class="source-row">
+
+                    <span>
+                        Data source:
+                    </span>
+
+                    <a
+                        id="wikiLink"
+                        href="#"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Splatoon Wiki
+                    </a>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
